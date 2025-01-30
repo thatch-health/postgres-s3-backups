@@ -1,20 +1,14 @@
 # Deploy a Cron Job to Backup PostgreSQL to Amazon S3
 
-This repo can be used to deploy a [Cron Job](https://render.com/docs/cronjobs) on [Render](https://render.com) to backup a PostgreSQL instance to Amazon S3.
+This repo is originally forked from https://github.com/render-examples/postgres-s3-backups.
 
-Fork this repo and click the button below to deploy.
+It is deployed as a cron job on Render in the same environment as the database that needs to be backed up.
 
-You'll need to set corresponding OS and Postgres versions:
-
-| `POSTGRES_VERSION` | `ALPINE_VERSION` |
-| :----------------: | :--------------: |
-| 16                 | 3.20             |
-| 15                 | 3.20             |
-| 14                 | 3.20             |
-| 13                 | 3.19             |
-| 12                 | 3.18             |
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
-
-See the guide at https://render.com/docs/backup-postgresql-to-s3 for more information.
-
+The following environment variables must be set:
+- `DATABASE_URL`: the _internal_ database URL
+- `AWS_REGION`: AWS region where the S3 bucket that will store the backups is located (probably us-west-2)
+- `S3_BUCKET_NAME`: name of the S3 bucket where the backups will be stored
+- `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY`: AWS credentials for a user that has access to the S3 bucket (and ideally nothing else)
+- `POSTGRES_VERSION`: Postgres version for the DB being backed up. At the time of this writing, we're running Postgres 15 in all environments, so this would be set to `15`
+- `ALPINE_VERSION`: Alpine version. `3.20` for Postgres 15 or 16.
+- `DIR_NAME`: top-level directory name where the backups will be stored in S3. Should be the same as the DB instance name on Render, e.g. `thatch-db-staging`.
