@@ -46,7 +46,12 @@ ensure_bucket_exists() {
 }
 
 pg_dump_database() {
-    pg_dump  --no-owner --no-privileges --clean --if-exists --quote-all-identifiers --exclude-table=flow_watermarks "${DATABASE_URL}"
+    local separator="?"
+    case "${DATABASE_URL}" in *\?*) separator="&";; esac
+    local url="${DATABASE_URL}${separator}keepalives=1&keepalives_idle=30&keepalives_interval=10&keepalives_count=6&tcp_user_timeout=60000"
+
+    PGOPTIONS="-c statement_timeout=0 -c idle_in_transaction_session_timeout=0 -c lock_timeout=0" \
+    pg_dump --no-owner --no-privileges --clean --if-exists --quote-all-identifiers --exclude-table=flow_watermarks "${url}"
 }
 
 upload_to_bucket() {
